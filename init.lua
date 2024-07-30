@@ -226,6 +226,7 @@ require('lazy').setup({
         --  All the info you're looking for is in `:help telescope.setup()`
         --
         defaults = {
+          layout_config = { width = 0.95 },
           mappings = {
             i = {
               ['<C-e>'] = function(bufnr)
