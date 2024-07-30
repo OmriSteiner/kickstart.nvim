@@ -204,24 +204,20 @@ require('lazy').setup({
       { 'nvim-tree/nvim-web-devicons', enabled = vim.g.have_nerd_font },
     },
     config = function()
-      -- Telescope is a fuzzy finder that comes with a lot of different things that
-      -- it can fuzzy find! It's more than just a "file finder", it can search
-      -- many different aspects of Neovim, your workspace, LSP, and more!
-      --
-      -- The easiest way to use Telescope, is to start by doing something like:
-      --  :Telescope help_tags
-      --
-      -- After running this command, a window will open up and you're able to
-      -- type in the prompt window. You'll see a list of `help_tags` options and
-      -- a corresponding preview of the help.
-      --
-      -- Two important keymaps to use while in Telescope are:
-      --  - Insert mode: <c-/>
-      --  - Normal mode: ?
-      --
-      -- This opens a window that shows you all of the keymaps for the current
-      -- Telescope picker. This is really useful to discover what Telescope can
-      -- do as well as how to actually do it!
+      -- define a slow scroll function
+      local state = require 'telescope.state'
+      local action_state = require 'telescope.actions.state'
+      local slow_scroll = function(prompt_bufnr, direction)
+        local previewer = action_state.get_current_picker(prompt_bufnr).previewer
+        local status = state.get_status(prompt_bufnr)
+
+        -- Check if we actually have a previewer and a preview window
+        if type(previewer) ~= 'table' or previewer.scroll_fn == nil or status.preview_win == nil then
+          return
+        end
+
+        previewer:scroll_fn(1 * direction)
+      end
 
       -- [[ Configure Telescope ]]
       -- See `:help telescope` and `:help telescope.setup()`
@@ -229,11 +225,18 @@ require('lazy').setup({
         -- You can put your default mappings / updates / etc. in here
         --  All the info you're looking for is in `:help telescope.setup()`
         --
-        -- defaults = {
-        --   mappings = {
-        --     i = { ['<c-enter>'] = 'to_fuzzy_refine' },
-        --   },
-        -- },
+        defaults = {
+          mappings = {
+            i = {
+              ['<C-e>'] = function(bufnr)
+                slow_scroll(bufnr, 1)
+              end,
+              ['<C-y>'] = function(bufnr)
+                slow_scroll(bufnr, -1)
+              end,
+            },
+          },
+        },
         -- pickers = {}
         extensions = {
           ['ui-select'] = {
