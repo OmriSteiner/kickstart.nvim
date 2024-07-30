@@ -82,6 +82,10 @@ vim.keymap.set('n', '<leader>q', vim.diagnostic.setloclist, { desc = 'Open diagn
 -- or just use <C-\><C-n> to exit terminal mode
 vim.keymap.set('t', '<Esc><Esc>', '<C-\\><C-n>', { desc = 'Exit terminal mode' })
 
+-- Easier scroll up/down
+vim.keymap.set('n', '<C-j>', '<C-e>')
+vim.keymap.set('n', '<C-k>', '<C-y>')
+
 -- [[ Basic Autocommands ]]
 --  See `:help lua-guide-autocommands`
 
