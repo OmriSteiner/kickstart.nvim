@@ -185,113 +185,35 @@ require('lazy').setup({
   --
   -- Use the `dependencies` key to specify the dependencies of a particular plugin
 
-  { -- Fuzzy Finder (files, lsp, etc)
-    'nvim-telescope/telescope.nvim',
-    event = 'VimEnter',
-    branch = '0.1.x',
-    dependencies = {
-      'nvim-lua/plenary.nvim',
-      { -- If encountering errors, see telescope-fzf-native README for installation instructions
-        'nvim-telescope/telescope-fzf-native.nvim',
-
-        -- `build` is used to run some command when the plugin is installed/updated.
-        -- This is only run then, not every time Neovim starts up.
-        build = 'make',
-
-        -- `cond` is a condition used to determine whether this plugin should be
-        -- installed and loaded.
-        cond = function()
-          return vim.fn.executable 'make' == 1
-        end,
-      },
-      { 'nvim-telescope/telescope-ui-select.nvim' },
-
-      -- Useful for getting pretty icons, but requires a Nerd Font.
-      { 'nvim-tree/nvim-web-devicons', enabled = vim.g.have_nerd_font },
-    },
+  {
+    'ibhagwan/fzf-lua',
     config = function()
-      -- define a slow scroll function
-      local state = require 'telescope.state'
-      local action_state = require 'telescope.actions.state'
-      local slow_scroll = function(prompt_bufnr, direction)
-        local previewer = action_state.get_current_picker(prompt_bufnr).previewer
-        local status = state.get_status(prompt_bufnr)
-
-        -- Check if we actually have a previewer and a preview window
-        if type(previewer) ~= 'table' or previewer.scroll_fn == nil or status.preview_win == nil then
-          return
-        end
-
-        previewer:scroll_fn(1 * direction)
-      end
-
-      -- [[ Configure Telescope ]]
-      -- See `:help telescope` and `:help telescope.setup()`
-      require('telescope').setup {
-        -- You can put your default mappings / updates / etc. in here
-        --  All the info you're looking for is in `:help telescope.setup()`
-        --
-        defaults = {
-          layout_config = { width = 0.95 },
-          mappings = {
-            i = {
-              ['<C-e>'] = function(bufnr)
-                slow_scroll(bufnr, 1)
-              end,
-              ['<C-y>'] = function(bufnr)
-                slow_scroll(bufnr, -1)
-              end,
-            },
+      -- calling `setup` is optional for customization
+      local fzf = require 'fzf-lua'
+      fzf.setup {
+        winopts = {
+          preview = {
+            horizontal = 'right:57%',
           },
         },
-        -- pickers = {}
-        extensions = {
-          ['ui-select'] = {
-            require('telescope.themes').get_dropdown(),
+        keymap = {
+          builtin = {
+            true,
+            ['<C-y>'] = 'preview-up',
+            ['<C-e>'] = 'preview-down',
+            ['<C-u>'] = 'preview-half-page-up',
+            ['<C-d>'] = 'preview-half-page-down',
           },
         },
       }
-
-      -- Enable Telescope extensions if they are installed
-      pcall(require('telescope').load_extension, 'fzf')
-      pcall(require('telescope').load_extension, 'ui-select')
-
-      -- See `:help telescope.builtin`
-      local builtin = require 'telescope.builtin'
-      vim.keymap.set('n', '<leader>sh', builtin.help_tags, { desc = '[S]earch [H]elp' })
-      vim.keymap.set('n', '<leader>sk', builtin.keymaps, { desc = '[S]earch [K]eymaps' })
-      vim.keymap.set('n', '<C-p>', builtin.git_files, { desc = 'Search git files' })
-      vim.keymap.set('n', '<leader>p', builtin.find_files, { desc = 'Search files' })
-      vim.keymap.set('n', '<leader>ss', builtin.builtin, { desc = '[S]earch [S]elect Telescope' })
-      vim.keymap.set('n', '<leader>sw', builtin.grep_string, { desc = '[S]earch current [W]ord' })
-      vim.keymap.set('n', '<C-F>', builtin.live_grep, { desc = 'Search by Grep' })
-      vim.keymap.set('n', '<leader>sd', builtin.diagnostics, { desc = '[S]earch [D]iagnostics' })
-      vim.keymap.set('n', '<leader>sr', builtin.resume, { desc = '[S]earch [R]esume' })
-      vim.keymap.set('n', '<leader>s.', builtin.oldfiles, { desc = '[S]earch Recent Files ("." for repeat)' })
-      vim.keymap.set('n', '<leader><leader>', builtin.buffers, { desc = '[,] Find existing buffers' })
-
-      -- Slightly advanced example of overriding default behavior and theme
-      vim.keymap.set('n', '<leader>/', function()
-        -- You can pass additional configuration to Telescope to change the theme, layout, etc.
-        builtin.current_buffer_fuzzy_find(require('telescope.themes').get_dropdown {
-          winblend = 10,
-          previewer = false,
-        })
-      end, { desc = '[/] Fuzzily search in current buffer' })
-
-      -- It's also possible to pass additional configuration options.
-      --  See `:help telescope.builtin.live_grep()` for information about particular keys
-      vim.keymap.set('n', '<leader>s/', function()
-        builtin.live_grep {
-          grep_open_files = true,
-          prompt_title = 'Live Grep in Open Files',
-        }
-      end, { desc = '[S]earch [/] in Open Files' })
-
-      -- Shortcut for searching your Neovim configuration files
-      vim.keymap.set('n', '<leader>sn', function()
-        builtin.find_files { cwd = vim.fn.stdpath 'config' }
-      end, { desc = '[S]earch [N]eovim files' })
+      vim.keymap.set('n', '<C-p>', fzf.git_files, { desc = 'Search git files' })
+      vim.keymap.set('n', '<leader>p', fzf.files, { desc = 'Search files' })
+      vim.keymap.set('n', '<C-f>', fzf.grep, { desc = 'Search by grep' })
+      vim.keymap.set('n', '<leader>sg', fzf.live_grep, { desc = 'Live grep' })
+      vim.keymap.set('n', '<leader><leader>', fzf.buffers, { desc = '[,] Find existing buffers' })
+      vim.keymap.set('n', '<leader>sw', fzf.grep_cword, { desc = '[S]earch current [W]ord' })
+      vim.keymap.set('n', '<leader>sdd', fzf.diagnostics_document, { desc = '[S]earch [D]iagnostics [D]ocument' })
+      vim.keymap.set('n', '<leader>sdw', fzf.diagnostics_workspace, { desc = '[S]earch [D]iagnostics [W]orkspace' })
     end,
   },
 
@@ -330,32 +252,36 @@ require('lazy').setup({
             vim.keymap.set('n', keys, func, { buffer = event.buf, desc = 'LSP: ' .. desc })
           end
 
+          local fzf = require 'fzf-lua'
+
           -- Jump to the definition of the word under your cursor.
           --  This is where a variable was first declared, or where a function is defined, etc.
           --  To jump back, press <C-t>.
-          local lsp_definitions = require('telescope.builtin').lsp_definitions
-          map('gd', lsp_definitions, '[G]oto [D]efinition')
+          local lsp_definitions = fzf.lsp_definitions
+          map('gd', function()
+            return lsp_definitions { jump_to_single_result = true }
+          end, '[G]oto [D]efinition')
           map('<C-w>gd', function()
-            return lsp_definitions { jump_type = 'tab' }
+            return lsp_definitions { jump_to_single_result = true, jump_to_single_result_action = require('fzf-lua.actions').file_tabedit }
           end, '[G]oto [D]efinition in tab')
 
           -- Find references for the word under your cursor.
-          map('gr', require('telescope.builtin').lsp_references, '[G]oto [R]eferences')
+          map('gr', fzf.lsp_references, '[G]oto [R]eferences')
 
           -- Jump to the implementation of the word under your cursor.
           --  Useful when your language has ways of declaring types without an actual implementation.
-          map('gI', require('telescope.builtin').lsp_implementations, '[G]oto [I]mplementation')
+          map('gI', fzf.lsp_implementations, '[G]oto [I]mplementation')
 
           -- Jump to the type of the word under your cursor.
-          map('gy', require('telescope.builtin').lsp_type_definitions, 'T[y]pe Definition')
+          map('gy', fzf.lsp_typedefs, 'T[y]pe Definition')
 
           -- Fuzzy find all the symbols in your current document.
           --  Symbols are things like variables, functions, types, etc.
-          map('<leader>ds', require('telescope.builtin').lsp_document_symbols, '[D]ocument [S]ymbols')
+          map('<leader>ds', fzf.lsp_document_symbols, '[D]ocument [S]ymbols')
 
           -- Fuzzy find all the symbols in your current workspace.
           --  Similar to document symbols, except searches over your entire project.
-          map('<leader>ws', require('telescope.builtin').lsp_dynamic_workspace_symbols, '[W]orkspace [S]ymbols')
+          map('<leader>ws', fzf.lsp_live_workspace_symbols, '[W]orkspace [S]ymbols')
 
           -- Rename the variable under your cursor.
           --  Most Language Servers support renaming across files, etc.
@@ -363,7 +289,17 @@ require('lazy').setup({
 
           -- Execute a code action, usually your cursor needs to be on top of an error
           -- or a suggestion from your LSP for this to activate.
-          map('<leader>a', vim.lsp.buf.code_action, 'Code [A]ction')
+          map('<leader>a', function()
+            fzf.lsp_code_actions {
+              winopts = {
+                height = 0.3,
+                width = 0.5,
+                preview = {
+                  hidden = 'hidden',
+                },
+              },
+            }
+          end, 'Code [A]ction')
 
           -- WARN: This is not Goto Definition, this is Goto Declaration.
           --  For example, in C this would take you to the header.
@@ -635,11 +571,7 @@ require('lazy').setup({
     end,
   },
 
-  { -- You can easily change to a different colorscheme.
-    -- Change the name of the colorscheme plugin below, and then
-    -- change the command in the config to whatever the name of that colorscheme is.
-    --
-    -- If you want to see what colorschemes are already installed, you can use `:Telescope colorscheme`.
+  {
     'zootedb0t/citruszest.nvim',
     priority = 1000, -- Make sure to load this before all the other start plugins.
     init = function()
