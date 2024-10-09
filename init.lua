@@ -565,7 +565,6 @@ require('lazy').setup({
           { name = 'nvim_lsp' },
           { name = 'luasnip' },
           { name = 'path' },
-          { name = 'copilot' },
         },
       }
     end,
@@ -657,17 +656,15 @@ require('lazy').setup({
 
   -- Github Copilot
   {
-    'zbirenbaum/copilot.lua',
-    cmd = 'Copilot',
-    event = 'InsertEnter',
+    'github/copilot.vim',
     config = function()
-      require('copilot').setup {}
-    end,
-  },
-  {
-    'zbirenbaum/copilot-cmp',
-    config = function()
-      require('copilot_cmp').setup()
+      -- Reminder: you can cycle through suggestions using <M-]> and <M-[>
+      vim.keymap.set('i', '<M-j>', 'copilot#Accept("")', {
+        expr = true,
+        replace_keycodes = false,
+      })
+      vim.keymap.set('i', '<M-l>', '<Plug>(copilot-accept-word)')
+      vim.g.copilot_no_tab_map = true
     end,
   },
 
