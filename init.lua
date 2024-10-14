@@ -88,6 +88,10 @@ vim.keymap.set('t', '<Esc><Esc>', '<C-\\><C-n>', { desc = 'Exit terminal mode' }
 vim.keymap.set('n', '<C-j>', '<C-e>')
 vim.keymap.set('n', '<C-k>', '<C-y>')
 
+-- Some toggles
+vim.keymap.set('n', '<leader>tw', ':set wrap!<CR>', { desc = 'Toggle [W]rap' })
+vim.keymap.set('n', '<leader>ts', ':set spell!<CR>', { desc = 'Toggle [S]pell' })
+
 -- [[ Basic Autocommands ]]
 --  See `:help lua-guide-autocommands`
 
