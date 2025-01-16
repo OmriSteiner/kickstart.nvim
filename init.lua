@@ -89,8 +89,11 @@ vim.keymap.set('n', '<C-j>', '<C-e>')
 vim.keymap.set('n', '<C-k>', '<C-y>')
 
 -- Some toggles
-vim.keymap.set('n', '<leader>tw', ':set wrap!<CR>', { desc = 'Toggle [W]rap' })
-vim.keymap.set('n', '<leader>ts', ':set spell!<CR>', { desc = 'Toggle [S]pell' })
+vim.keymap.set('n', '<leader>tw', ':set wrap!<CR>', { desc = '[T]oggle [W]rap' })
+vim.keymap.set('n', '<leader>ts', ':set spell!<CR>', { desc = '[T]oggle [S]pell' })
+
+-- Floating diagnostic
+vim.keymap.set('n', '<leader>sdf', vim.diagnostic.open_float, { desc = '[S]how [D]iagnostic [F]loating' })
 
 -- [[ Basic Autocommands ]]
 --  See `:help lua-guide-autocommands`
@@ -343,9 +346,9 @@ require('lazy').setup({
           --
           -- This may be unwanted, since they displace some of your code
           if client and client.supports_method(vim.lsp.protocol.Methods.textDocument_inlayHint) then
-            map('<leader>th', function()
+            map('<leader>ti', function()
               vim.lsp.inlay_hint.enable(not vim.lsp.inlay_hint.is_enabled { bufnr = event.buf })
-            end, '[T]oggle Inlay [H]ints')
+            end, '[T]oggle [I]nlay Hints')
           end
         end,
       })
@@ -439,7 +442,7 @@ require('lazy').setup({
         function()
           require('conform').format { async = true, lsp_fallback = true }
         end,
-        mode = '',
+        mode = 'n',
         desc = '[F]ormat buffer',
       },
     },
@@ -525,7 +528,7 @@ require('lazy').setup({
           -- Accept ([y]es) the completion.
           --  This will auto-import if your LSP supports it.
           --  This will expand snippets if the LSP sent a snippet.
-          ['<leader>f'] = cmp.mapping.confirm { select = true },
+          ['<M-y>'] = cmp.mapping.confirm { select = true },
 
           -- If you prefer more traditional completion keymaps,
           -- you can uncomment the following lines
