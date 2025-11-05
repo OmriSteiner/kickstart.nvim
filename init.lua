@@ -267,10 +267,10 @@ require('lazy').setup({
           --  To jump back, press <C-t>.
           local lsp_definitions = fzf.lsp_definitions
           map('gd', function()
-            return lsp_definitions { jump_to_single_result = true }
+            return lsp_definitions { jump1 = true }
           end, '[G]oto [D]efinition')
           map('<C-w>gd', function()
-            return lsp_definitions { jump_to_single_result = true, jump_to_single_result_action = require('fzf-lua.actions').file_tabedit }
+            return lsp_definitions { jump1 = true, jump1_action = require('fzf-lua.actions').file_tabedit }
           end, '[G]oto [D]efinition in tab')
 
           -- Find references for the word under your cursor.
