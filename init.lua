@@ -375,6 +375,17 @@ require('lazy').setup({
         gopls = {},
         pyright = {},
         rust_analyzer = {},
+        kotlin_language_server = {
+          settings = {
+            kotlin = {
+              hints = {
+                typeHints = true,
+                parameterHints = true,
+                chainHints = true,
+              }
+            },
+          },
+        },
         helm_ls = {},
         terraformls = {},
         -- ... etc. See `:help lspconfig-all` for a list of all the pre-configured LSPs
