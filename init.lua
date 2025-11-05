@@ -661,6 +661,7 @@ require('lazy').setup({
         'dockerfile',
         'helm',
         'gotmpl',
+        'kotlin',
       },
       -- Autoinstall languages that are not installed
       auto_install = true,
