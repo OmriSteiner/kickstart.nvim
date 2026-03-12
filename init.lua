@@ -373,8 +373,22 @@ require('lazy').setup({
       local servers = {
         clangd = {},
         gopls = {},
-        pyright = {},
         rust_analyzer = {},
+        basedpyright = {
+          settings = {
+            basedpyright = {
+              analysis = {
+                typeCheckingMode = 'basic',
+                inlayHints = {
+                  variableTypes = true,
+                  callArgumentNames = true,
+                  functionReturnTypes = true,
+                  genericTypes = false,
+                },
+              },
+            },
+          },
+        },
         kotlin_language_server = {
           settings = {
             kotlin = {
