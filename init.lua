@@ -222,6 +222,7 @@ require('lazy').setup({
       vim.keymap.set('n', '<leader>sw', fzf.grep_cword, { desc = '[S]earch current [W]ord' })
       vim.keymap.set('n', '<leader>sdd', fzf.diagnostics_document, { desc = '[S]earch [D]iagnostics [D]ocument' })
       vim.keymap.set('n', '<leader>sdw', fzf.diagnostics_workspace, { desc = '[S]earch [D]iagnostics [W]orkspace' })
+      vim.cmd 'FzfLua register_ui_select'
     end,
   },
 
